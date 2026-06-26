@@ -70,11 +70,20 @@ Yes. AI helped me design a test that actually targets the bug instead of one tha
 
 - How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
 
+I'd tell my friend that Streamlit re-runs the entire script from top to bottom every single time you interact with the page — every button click, text entry, or checkbox toggle restarts the whole file as if you just opened it. That means any normal Python variable gets recreated from scratch on each interaction, so something like `secret = random.randint(1, 100)` would pick a brand-new number on every guess and the game would be impossible. To remember things between reruns, Streamlit gives you `st.session_state`, which is like a small backpack that survives the rerun and holds your data. That's exactly why this project stores `secret`, `attempts`, `score`, and `history` in `st.session_state` and only initializes them with an `if "secret" not in st.session_state` guard, so they're set once and then persist instead of resetting. The big lesson for me was that in Streamlit you have to be deliberate about what lives in session state versus what gets rebuilt every run, because forgetting that distinction is what makes a value seem to "glitch" or reset on its own.
+
 ---
 
 ## 5. Looking ahead: your developer habits
 
 - What is one habit or strategy from this project that you want to reuse in future labs or projects?
-  - This could be a testing habit, a prompting strategy, or a way you used Git.
+
+The habit I really want to keep is writing a test that would actually fail if the bug came back, instead of just clicking around and assuming it's fixed. The `check_guess(9, 100)` test was an eye-opener for me, because an "obvious" test like `40` vs `50` would have passed even with the broken code. Now I think about picking inputs that prove something, not just inputs that happen to work.
+
 - What is one thing you would do differently next time you work with AI on a coding task?
+
+Next time I'd slow down and make the AI explain the root cause before it changes anything, rather than letting it jump straight to a patch. A couple of times I almost accepted a fix without really understanding why the bug happened, and I think that's how you end up with code you can't maintain. I'd rather ask "why is this broken?" first and only apply the fix once I actually get it.
+
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
+
+I used to assume that if AI-generated code ran without errors, it was basically correct. Now I treat it like a first draft from a confident coworker who might be wrong — the `try/except` that "handled" the error while quietly producing wrong answers showed me that code can look polished and still be broken, so I need to read it and test it myself.
